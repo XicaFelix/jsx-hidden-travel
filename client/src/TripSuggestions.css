@@ -1,0 +1,57 @@
+.trip-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    background: #f9fafb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .trip-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .suggestion-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+  
+  .suggestion-item {
+    font-size: 1.1rem;
+    background: #e0f7fa;
+    color: #00796b;
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+  }
+  
+  .try-again-button {
+    margin-top: 1rem;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .try-again-button:hover {
+    background-color: #388e3c;
+  }
+  
+  .error-msg {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .info-msg {
+    font-style: italic;
+    color: #555;
+  }
+  
