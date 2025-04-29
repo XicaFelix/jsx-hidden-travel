@@ -116,7 +116,7 @@ Frontend runs at: `http://localhost:3000`
 
 | Home Page | Adventure Suggestions |
 |:---|:---|
-| ![Home Screenshot](frontend/public/home-screenshot.png) | ![Adventure Screenshot](frontend/public/adventure-screenshot.png) |
+| ![Home Screenshot](client/public/home-screenshot.png) | ![Adventure Screenshot](client/public/adventure-screenshot.png) |
 
 
 
