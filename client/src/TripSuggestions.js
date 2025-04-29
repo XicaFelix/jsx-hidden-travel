@@ -114,6 +114,7 @@ const TripSuggestions = () => {
               <p>⏰ Estimated Time Needed: <strong>{details.hours} hours</strong></p>
             </div>
           )}
+          
 
           {/* Go back to the list of suggestions */}
           <button className="back-button" onClick={() => setSelectedSuggestion(null)}>
