@@ -27,18 +27,23 @@ const TripSuggestions = () => {
 
   const fetchSuggestions = useCallback(() => {
     if (!location) return;
-
+    
     setLoading(true);
     setError(null);
     setSelectedSuggestion(null);
     setDetails(null);
-
+    
     axios.post('http://127.0.0.1:5000/api/suggestions', {
       latitude: location.latitude,
       longitude: location.longitude
     })
     .then(response => {
-      setSuggestions(response.data.suggestions);
+      // Ensure we always have exactly 3 items for the layout
+      let fetchedSuggestions = response.data.suggestions;
+      while (fetchedSuggestions.length < 3) {
+        fetchedSuggestions.push("Try something spontaneous nearby!");
+      }
+      setSuggestions(fetchedSuggestions.slice(0, 3));
       setLoading(false);
     })
     .catch(err => {
@@ -56,16 +61,18 @@ const TripSuggestions = () => {
 
   const handleSuggestionClick = (suggestion) => {
     setSelectedSuggestion(suggestion);
-      };
+  };
 
   return (
     <div className="trip-container">
       <h2 className="trip-title">🌍 Fun Trip Suggestions</h2>
-
+      
       {error && <p className="error-msg">{error}</p>}
+      
       {!error && !location && <p className="info-msg">📍 Getting your location...</p>}
+      
       {loading && <p className="info-msg">⏳ Fetching ideas for your trip...</p>}
-
+      
       {!loading && !selectedSuggestion && suggestions.length > 0 && (
         <ul className="suggestion-list">
           {suggestions.map((suggestion, index) => (
@@ -79,13 +86,13 @@ const TripSuggestions = () => {
           ))}
         </ul>
       )}
-
+      
       {!loading && !selectedSuggestion && location && (
         <button className="try-again-button" onClick={fetchSuggestions}>
           🔄 Try Again
         </button>
       )}
-
+      
       {!loading && selectedSuggestion && (
         <div className="details-section">
           <h3>🌟 Adventure Details</h3>

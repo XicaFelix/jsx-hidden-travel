@@ -14,40 +14,46 @@
   color: #333;
 }
 
-.suggestion-grid {
+/* Change the suggestion-list to use flexbox instead of default list styling */
+.suggestion-list {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  list-style-type: none;
+  padding: 0;
+  margin: 1.5rem 0;
   gap: 1rem;
-  margin: 1rem 0;
 }
 
 .suggestion-item {
-  flex: 0 0 calc(33.333% - 1rem);
+  flex: 1;
   font-size: 1.1rem;
   background: #e0f7fa;
   color: #00796b;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
-
+.suggestion-item.clickable {
+  cursor: pointer;
+}
 
 .suggestion-item.clickable:hover {
   background-color: #d0f0f3;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .try-again-button {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   padding: 0.7rem 1.5rem;
   font-size: 1rem;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 8px;
-  
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
@@ -56,13 +62,17 @@
 }
 
 .error-msg {
-  color: red;
+  color: #e53935;
   font-weight: bold;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: rgba(229, 57, 53, 0.1);
 }
 
 .info-msg {
   font-style: italic;
   color: #555;
+  padding: 1rem;
 }
 
 .details-section {
@@ -79,7 +89,7 @@
   color: white;
   border: none;
   border-radius: 8px;
- 
+  cursor: pointer;
   transition: background-color 0.3s;
 }
 
@@ -107,9 +117,13 @@
   margin: 5px 0;
 }
 
-/* Responsive: Stack vertically on very small screens */
-@media (max-width: 600px) {
+/* Responsive: Stack vertically on smaller screens */
+@media (max-width: 650px) {
+  .suggestion-list {
+    flex-direction: column;
+  }
+  
   .suggestion-item {
-    flex: 0 0 100%;
+    margin-bottom: 1rem;
   }
 }
