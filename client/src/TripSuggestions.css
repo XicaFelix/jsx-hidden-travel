@@ -1,57 +1,130 @@
 .trip-container {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2rem;
-    border-radius: 12px;
-    background: #f9fafb;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .trip-title {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-  }
-  
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.trip-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* Change the suggestion-list to use flexbox instead of default list styling */
+.suggestion-list {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  gap: 1rem;
+}
+
+.suggestion-item {
+  flex: 1;
+  font-size: 1.1rem;
+  background: #ffffff;
+  color: #333333;
+  padding: 1.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #eaeaea;
+}
+
+.suggestion-item.clickable {
+  cursor: pointer;
+}
+
+.suggestion-item.clickable:hover {
+  background-color: #f9f9f9;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.try-again-button {
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.try-again-button:hover {
+  background-color: #388e3c;
+}
+
+.error-msg {
+  color: #e53935;
+  font-weight: bold;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: rgba(229, 57, 53, 0.1);
+}
+
+.info-msg {
+  font-style: italic;
+  color: #555;
+  padding: 1rem;
+}
+
+.details-section {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #eef;
+  border-radius: 10px;
+}
+
+.back-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #0099ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #007acc;
+}
+
+.highlight {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.map-container {
+  margin-top: 15px;
+}
+
+.extra-details {
+  margin-top: 15px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.extra-details p {
+  margin: 5px 0;
+}
+
+/* Responsive: Stack vertically on smaller screens */
+@media (max-width: 650px) {
   .suggestion-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 1rem 0;
+    flex-direction: column;
   }
   
   .suggestion-item {
-    font-size: 1.1rem;
-    background: #e0f7fa;
-    color: #00796b;
-    padding: 0.8rem 1rem;
-    margin: 0.5rem 0;
-    border-radius: 8px;
+    margin-bottom: 1rem;
   }
-  
-  .try-again-button {
-    margin-top: 1rem;
-    padding: 0.7rem 1.5rem;
-    font-size: 1rem;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .try-again-button:hover {
-    background-color: #388e3c;
-  }
-  
-  .error-msg {
-    color: red;
-    font-weight: bold;
-  }
-  
-  .info-msg {
-    font-style: italic;
-    color: #555;
-  }
-  
+}
