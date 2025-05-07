@@ -27,13 +27,17 @@
 .suggestion-item {
   flex: 1;
   font-size: 1.1rem;
+
   background: #ffffff;
   color: #333333;
+
   padding: 1.5rem 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+
   border: 1px solid #eaeaea;
+
 }
 
 .suggestion-item.clickable {
@@ -41,9 +45,9 @@
 }
 
 .suggestion-item.clickable:hover {
+
   background-color: #f9f9f9;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
 }
 
 .try-again-button {

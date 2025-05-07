@@ -1,82 +1,70 @@
 import os
 from flask import Flask, jsonify, request
-import openai
+from flask_cors import CORS
 from dotenv import load_dotenv
+from openai import OpenAI # Use OpenAI client with AIMLAPI
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app) # Enable CORS for frontend access
 
-# Setup OpenAI API key from .env
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Set up OpenAI (AIMLAPI) configuration
+api_key = os.getenv("OPENAI_API_KEY")  # Changed to use a proper env variable name
+base_url = "https://api.aimlapi.com/v1"
 
-# Route to get trip suggestions based on user's location
+# Print key (for debugging - remove in production)
+print(f"API KEY: {api_key}")
+
+# Initialize OpenAI API client
+api = OpenAI(api_key=api_key, base_url=base_url)
+
+# Route to get trip suggestions
 @app.route('/api/suggestions', methods=['POST'])
 def get_suggestions():
     data = request.get_json()
-
-    # Get the latitude and longitude from the incoming request
     latitude = data.get('latitude')
     longitude = data.get('longitude')
-
-    # Log the received location for debugging
-    print(f"Received location: Latitude = {latitude}, Longitude = {longitude}")
-
-    # Validate if the latitude and longitude are present
+    
     if not latitude or not longitude:
         return jsonify({"error": "Invalid location data"}), 400
-
-    # Construct the location string (you can expand this with additional information)
+    
     location = f"Latitude: {latitude}, Longitude: {longitude}"
-
-    # Define a budget range (you can customize this further)
     budget_range = "$20–40"
-
-    # Get suggestions from AI
     suggestions = get_trip_suggestions(location, budget_range)
-
+    
     return jsonify({"suggestions": suggestions})
 
-# Function to simulate AI-based trip suggestions
-# Function to simulate AI-based trip suggestions with a creative prompt
+# Function to generate travel ideas using AIMLAPI
 def get_trip_suggestions(location, budget_range):
     try:
-        # prompt for OpenAI
-        prompt = f"""
-        You're a fun and adventurous guide helping someone explore exciting things in their city. 
-        They are currently near {location} and have a budget of {budget_range}. 
-        Suggest a few cool, unique, and unforgettable activities they could do nearby. 
-        Make sure the activities are fun, not too common, and ideally a little quirky or surprising. 
-        Provide a variety of suggestions like visiting an unusual bar, a cool local event, a hidden gem, 
-        or something out-of-the-ordinary like an interactive experience or an outdoor adventure. 
-        Keep it light-hearted, spontaneous, and memorable, but also ensure it's something that can easily be done 
-        without long wait times or overwhelming crowds. The suggestions should fit the vibe of a local explorer!
-        """
-        
-        # Get AI-generated response from OpenAI with a more creative and engaging prompt
-        response = openai.Completion.create(
-            model="text-davinci-003",  # Or use a different model depending on your requirements
-            prompt=prompt,
-            max_tokens=200,  # Allow for more detail
-            n=3,  # Get 3 suggestions
-            stop=None,
-            temperature=0.7,  # Higher value for more creative results
+        user_prompt = (
+            f"You are a fun and adventurous local guide. The user is currently near {location} "
+            f"and has a budget of {budget_range}. Suggest 3 unique and quirky things to do nearby — "
+            f"like hidden gems, cool spots, fun activities, or surprising experiences. "
+            f"Make sure the ideas are creative and memorable, not tourist clichés."
         )
         
-        # Extract suggestions from the response
-        suggestions = response.choices
-        activities = [suggestion.text.strip() for suggestion in suggestions]
-
-        # Return the list of suggested activities
-        return activities
-
+        completion = api.chat.completions.create(
+            model="gpt-4o", # Or use "gpt-3.5-turbo" if needed
+            messages=[
+                {"role": "system", "content": "You are a creative travel assistant."},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.8,
+            max_tokens=400,
+            n=1
+        )
+        
+        content = completion.choices[0].message.content
+        activities = [item.strip("-• ").strip() for item in content.split("\n") if item.strip()]
+        return activities[:3]
     except Exception as e:
-        print(f"Error: {e}")
-        return ["Sorry, we couldn't generate suggestions at the moment."]
+        print(f"Error during OpenAI call: {e}")
+        return ["⚠️ Sorry, we couldn't generate suggestions at the moment."]
 
-
-# Main entry point for running the Flask app
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
