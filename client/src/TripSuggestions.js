@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './TripSuggestions.css';
+import DisplayMap from './DisplayMap';
 
 const TripSuggestions = () => {
   const [location, setLocation] = useState(null);
@@ -8,17 +9,12 @@ const TripSuggestions = () => {
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [details, setDetails] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
-          setLocation(position.coords);
-        },
-        () => {
-          setError('📍 Unable to retrieve your location.');
-        }
+        position => setLocation(position.coords),
+        () => setError('📍 Unable to retrieve your location.')
       );
     } else {
       setError('❌ Geolocation is not supported by this browser.');
@@ -27,36 +23,27 @@ const TripSuggestions = () => {
 
   const fetchSuggestions = useCallback(() => {
     if (!location) return;
-    
+
     setLoading(true);
     setError(null);
     setSelectedSuggestion(null);
-    setDetails(null);
-    
+
     axios.post('http://127.0.0.1:5000/api/suggestions', {
       latitude: location.latitude,
       longitude: location.longitude
     })
-    .then(response => {
-      // Ensure we always have exactly 3 items for the layout
-      let fetchedSuggestions = response.data.suggestions;
-      while (fetchedSuggestions.length < 3) {
-        fetchedSuggestions.push("Try something spontaneous nearby!");
-      }
-      setSuggestions(fetchedSuggestions.slice(0, 3));
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error('Error details:', err);
-      setError('⚠️ Failed to fetch suggestions. Make sure the server is running.');
-      setLoading(false);
-    });
+      .then(response => {
+        setSuggestions(response.data.suggestions || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError('⚠️ Failed to fetch suggestions.');
+        setLoading(false);
+      });
   }, [location]);
 
   useEffect(() => {
-    if (location) {
-      fetchSuggestions();
-    }
+    if (location) fetchSuggestions();
   }, [location, fetchSuggestions]);
 
   const handleSuggestionClick = (suggestion) => {
@@ -66,13 +53,10 @@ const TripSuggestions = () => {
   return (
     <div className="trip-container">
       <h2 className="trip-title">🌍 Fun Trip Suggestions</h2>
-      
       {error && <p className="error-msg">{error}</p>}
-      
-      {!error && !location && <p className="info-msg">📍 Getting your location...</p>}
-      
-      {loading && <p className="info-msg">⏳ Fetching ideas for your trip...</p>}
-      
+      {!location && !error && <p>📍 Getting your location...</p>}
+      {loading && <p>⏳ Fetching ideas...</p>}
+
       {!loading && !selectedSuggestion && suggestions.length > 0 && (
         <ul className="suggestion-list">
           {suggestions.map((suggestion, index) => (
@@ -81,28 +65,23 @@ const TripSuggestions = () => {
               className="suggestion-item clickable"
               onClick={() => handleSuggestionClick(suggestion)}
             >
-              🎯 {suggestion}
+              🎯 {suggestion.title}
             </li>
           ))}
         </ul>
       )}
-      
-      {!loading && !selectedSuggestion && location && (
-        <button className="try-again-button" onClick={fetchSuggestions}>
-          🔄 Try Again
-        </button>
-      )}
-      
+
       {!loading && selectedSuggestion && (
         <div className="details-section">
           <h3>🌟 Adventure Details</h3>
-          <p className="highlight">✨ {selectedSuggestion}</p>
-          {details && (
-            <div className="extra-details">
-              <p>💸 Estimated Budget: <strong>${details.budget}</strong></p>
-              <p>⏰ Estimated Time Needed: <strong>{details.hours} hours</strong></p>
-            </div>
-          )}
+          <p className="highlight">{selectedSuggestion.title}</p>
+          <p>{selectedSuggestion.description}</p>
+
+          <DisplayMap
+            userLocation={location}
+            suggestion={selectedSuggestion}
+          />
+
           <button className="back-button" onClick={() => setSelectedSuggestion(null)}>
             🔙 Back to Suggestions
           </button>
