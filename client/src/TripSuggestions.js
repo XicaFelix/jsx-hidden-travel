@@ -1,7 +1,10 @@
+// 📁 TripSuggestions.js
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import './TripSuggestions.css';
 import DisplayMap from './DisplayMap';
+import Loader from './Loader';
+import SuggestionCard from './SuggestionCard';
+import './TripSuggestions.css';
 
 const TripSuggestions = () => {
   const [location, setLocation] = useState(null);
@@ -23,7 +26,6 @@ const TripSuggestions = () => {
 
   const fetchSuggestions = useCallback(() => {
     if (!location) return;
-
     setLoading(true);
     setError(null);
     setSelectedSuggestion(null);
@@ -32,55 +34,65 @@ const TripSuggestions = () => {
       latitude: location.latitude,
       longitude: location.longitude
     })
-      .then(response => {
-        setSuggestions(response.data.suggestions || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError('⚠️ Failed to fetch suggestions.');
-        setLoading(false);
-      });
+    .then(response => {
+      const fetched = response.data.suggestions;
+      setSuggestions(fetched);
+      setLoading(false);
+    })
+    .catch(err => {
+      setError('⚠️ Failed to fetch suggestions.');
+      setLoading(false);
+    });
   }, [location]);
 
   useEffect(() => {
     if (location) fetchSuggestions();
   }, [location, fetchSuggestions]);
 
-  const handleSuggestionClick = (suggestion) => {
-    setSelectedSuggestion(suggestion);
-  };
+  const handleClick = suggestion => setSelectedSuggestion(suggestion);
 
   return (
     <div className="trip-container">
       <h2 className="trip-title">🌍 Fun Trip Suggestions</h2>
+
       {error && <p className="error-msg">{error}</p>}
-      {!location && !error && <p>📍 Getting your location...</p>}
-      {loading && <p>⏳ Fetching ideas...</p>}
+      {!location && <p className="info-msg">📍 Getting your location...</p>}
+      {loading && <Loader />}
 
       {!loading && !selectedSuggestion && suggestions.length > 0 && (
-        <ul className="suggestion-list">
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              className="suggestion-item clickable"
-              onClick={() => handleSuggestionClick(suggestion)}
-            >
-              🎯 {suggestion.title}
-            </li>
+        <div className="suggestion-list">
+          {suggestions.map((s, idx) => (
+            <SuggestionCard key={idx} suggestion={s} onClick={handleClick} />
           ))}
-        </ul>
+        </div>
+      )}
+
+      {!loading && !selectedSuggestion && location && (
+        <button className="try-again-button" onClick={fetchSuggestions}>
+          🔄 Try Again
+        </button>
       )}
 
       {!loading && selectedSuggestion && (
         <div className="details-section">
-          <h3>🌟 Adventure Details</h3>
-          <p className="highlight">{selectedSuggestion.title}</p>
-          <p>{selectedSuggestion.description}</p>
+          <h3>{selectedSuggestion.title}</h3>
+          <p className="highlight"><strong>📝 Overview:</strong> {selectedSuggestion.info}</p>
 
-          <DisplayMap
-            userLocation={location}
-            suggestion={selectedSuggestion}
-          />
+          <div className="extra-details">
+            <p>⏰ <strong>Estimated Time:</strong> {selectedSuggestion.estimated_time}</p>
+            <p>💸 <strong>Estimated Cost:</strong> ${selectedSuggestion.estimated_cost}</p>
+          </div>
+
+          <div className="map-container">
+            <h4>🗺️ Suggested Places to Visit:</h4>
+            <ul>
+              {selectedSuggestion.places.map((place, i) => (
+                <li key={i}>🔹 {place}</li>
+              ))}
+            </ul>
+
+            <DisplayMap userLocation={location} places={selectedSuggestion.places} />
+          </div>
 
           <button className="back-button" onClick={() => setSelectedSuggestion(null)}>
             🔙 Back to Suggestions
